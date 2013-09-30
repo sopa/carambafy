@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Carambafy</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
+	<script src="chester.js" type="text/javascript"></script>
+	<script type="text/javascript">;
+	$(document).ready(function () {
+		setupApp();
+		function setupApp() {
+			// canvas setup
+			chesterGL.settings['backgroundColor'] = [0.9, 0.9, 0.9, 0];
+			chesterGL.setup("game-canvas");
+			chesterGL.setupPerspective();
+
+			// loads assets
+			chesterGL.BlockFrames.loadFrames("buttons.json");
+			chesterGL.assetsLoaded("all", function () {
+
+				// sets scene
+				var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+				sceneBlock.title = "CARAMBAFY";
+				sceneBlock.DEFAULT_TILE_SCALE = 0.3;
+				chesterGL.setRunningScene(sceneBlock);
+
+				// display/unlock input
+
+				Carambafy = function() {
+					var sz = chesterGL.viewportSize();
+
+					// deletes previous text
+					sceneBlock.removeAll();
+
+					// gets and cleans text input
+					var rawText = $("#text").val(),
+						text = rawText.replace(/(^\s+|\s+$)/g,''),
+						text = text.toUpperCase(),
+						splitText = text.split("");
+
+					// gets new scale
+					sceneBlock.tileScale = sceneBlock.DEFAULT_TILE_SCALE * $("#scale").val() || sceneBlock.DEFAULT_TILE_SCALE;
+
+					// make blocks for each character
+					for (var i in splitText) {
+						var block = new chesterGL.Block(),
+							bg = new chesterGL.Block(),
+							frame = new chesterGL.Block("block1.png"),
+							label = new chesterGL.LabelBlock(splitText[i], "200px Arial"),
+							stroke = new chesterGL.Block();
+
+						// block setup
+						block.letter = splitText[i];
+						block.setPosition(sz.width * 0.5, sz.height * 0.5, 0)
+						block.setContentSize(280, 280);
+						block.setScale(sceneBlock.tileScale);
+						sceneBlock.append(block);
+
+						// bg setup
+						bg.setColor([0, 0, 0, 1]);
+						bg.setContentSize(block.getContentSize().width, block.getContentSize().height);
+						bg.setScale(0.84);
+
+						//frame setup
+						frameNum = Math.floor(Math.random() * 7) + 2;
+						while (frameNum === sceneBlock.prevFrame) {
+							frameNum = Math.floor(Math.random() * 7) + 2;
+						}
+						frame.setFrame("block" + frameNum + ".png");
+						sceneBlock.prevFrame = frameNum;
+
+						// label setup
+						label.adjustPosition(0, -15);
+
+						// stroke setup
+						stroke.setColor([1, 1, 1, 1]);
+						stroke.setContentSize(block.getContentSize().width, block.getContentSize().height);
+						stroke.setScale(1.08);
+
+						// appends parts to block
+						block.append(stroke, frame, bg, label);
+
+						// hides blank characters
+						if (splitText[i] === " ") {
+							block.setVisible(0);
+						} else {
+							// randomizes the orientation of the rotation
+							if (!sceneBlock.face) {
+								sceneBlock.face = "left";
+							} else {
+								var randDeg = Math.floor(Math.random() * 19);
+								switch (sceneBlock.face) {
+									case "left":
+									block.setRotation((Math.PI / 180.0) * -randDeg);
+									sceneBlock.face = "right";
+									break;
+									case "right":
+									block.setRotation((Math.PI / 180.0) * randDeg);
+									sceneBlock.face = "left";
+									break;
+								}
+							}
+						}
+					}
+
+					// aligns all blocks
+					var totalArea = (280 * sceneBlock.tileScale) * splitText.length;
+					for (var k in sceneBlock.children) {
+						var block = sceneBlock.children[k],
+							x = (block.getContentSize().width * sceneBlock.tileScale) * k;
+						block.adjustPosition(x - totalArea / 2, 0, 0);
+					}
+
+					// z ordering
+					var z = 0;
+					for (var l = sceneBlock.children.length - 1; l >= 0; l--) {
+						var block = sceneBlock.children[l];
+						block.setZOrder(z);
+						z++;
+					}
+
+					var DONE = true;
+					if (DONE) {
+						// allows to save canvas as image
+						document.getElementById("canvasImg").src = document.getElementById("game-canvas").toDataURL();
+					}
+				}
+
+				chesterGL.run();
+			});
+		}
+
+		// button
+		$("#make-text-btn").click(function() {
+			Carambafy();
+		});
+	});
+	</script>
+</head>
+<body>
+
+	<style>
+		/* temp css */
+		body { background-color: orange;}
+		.game-container {
+			width: 860px;
+			height: 400px;
+			margin: 0 auto;
+		}
+		#game-canvas {
+			border-radius: 10px;
+			background-color: rgb(255, 127, 39);
+		}
+		input {
+			width: 200px;
+			height: 20px;
+		}
+		#scale {
+			width: 90px;
+			text-align: center;
+		}
+		#make-text-btn {
+			width: 100px;
+			height: 30px;
+		}
+
+	</style>
+	<div class="container">
+		<div class="game-container">
+			<canvas id="game-canvas" width="860" height="300"></canvas>
+			<input type="text" id="text" placeholder="Text goes here"></input>
+			<input type="text" id="scale" placeholder="Optional scale"></input>
+			<input type="button" id="make-text-btn" value="CARAMBAFY!">
+			<img id="canvasImg" alt="Right click to save me!">
+		</div>
+	</div>
+</body>
+</html>

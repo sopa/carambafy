@@ -119,20 +119,26 @@
 						z++;
 					}
 
-					var DONE = true;
-					if (DONE) {
-						// allows to save canvas as image
-						document.getElementById("canvasImg").src = document.getElementById("game-canvas").toDataURL();
-					}
+					// creates image
+					makeImage();
 				}
 
 				chesterGL.run();
 			});
 		}
 
+		function makeImage() {
+			setTimeout(function () {
+				// allows to save canvas as image
+				document.getElementById("canvasImg").src = document.getElementById("game-canvas").toDataURL();
+				// adds title
+				$("#canvasImg").attr("title", "Right-click -> Save Image As...");
+			}, 1)
+		}
+
 		// button
-		$("#make-text-btn").click(function() {
-			Carambafy();
+		$("#make-text-btn").click(function () {
+			Carambafy()
 		});
 	});
 	</script>
@@ -140,16 +146,31 @@
 <body>
 
 	<style>
-		/* temp css */
-		body { background-color: orange;}
-		.game-container {
+		body { 
+			color: #FFF;
+			font-family: Arial;
+			background-color: orange;
+		}
+		.container {
 			width: 860px;
-			height: 400px;
 			margin: 0 auto;
+			margin-top: 50px;
 		}
 		#game-canvas {
+			display: none;
+		}
+		#image-container {
+			/* must be same content size as canvas */
+			width: inherit;
+			height: 300px;
 			border-radius: 10px;
+			border: 1px dashed rgb(9, 169, 243); 
 			background-color: rgb(255, 127, 39);
+		}
+		#controls { margin-top: 10px; }
+		#controls label {
+			font-size: 12px;
+			text-shadow: 1px 1px 3px #000;
 		}
 		input {
 			width: 200px;
@@ -159,19 +180,35 @@
 			width: 90px;
 			text-align: center;
 		}
-		#make-text-btn {
+		#make-text-btn, #make-img-btn {
 			width: 100px;
 			height: 30px;
+		}
+		#footer {
+			margin-top: 50px;
+			font-size: 10px;
+			text-align: center;
+		}
+		#footer a { 
+			color: #FFF; 
+			text-decoration: none;
 		}
 
 	</style>
 	<div class="container">
-		<div class="game-container">
-			<canvas id="game-canvas" width="860" height="300"></canvas>
+		<canvas id="game-canvas" width="860" height="300"></canvas>
+		<div id="image-container">
+			<center><img id="canvasImg"></center>
+		</div>
+		<div id="controls">
+			<label>&lowast; Right-click &rarr; Save image as...</label>
 			<input type="text" id="text" placeholder="Text goes here"></input>
 			<input type="text" id="scale" placeholder="Optional scale"></input>
 			<input type="button" id="make-text-btn" value="CARAMBAFY!">
-			<img id="canvasImg" alt="Right click to save me!">
+		</div>
+		<div id="footer">
+			Carambafy by Carlos Pérez <br>
+			Caramba &copy; Learning Shift EIRL - <a href="www.learningshift.cl">www.learningshift.cl</a>
 		</div>
 	</div>
 </body>

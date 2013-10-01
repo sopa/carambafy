@@ -8,8 +8,10 @@
 	<script type="text/javascript">;
 	$(document).ready(function () {
 		setupApp();
+
 		function setupApp() {
 			// canvas setup
+			// chesterGL.settings['webglMode'] = false;
 			chesterGL.settings['backgroundColor'] = [0.9, 0.9, 0.9, 0];
 			chesterGL.setup("game-canvas");
 			chesterGL.setupPerspective();
@@ -104,11 +106,12 @@
 					}
 
 					// aligns all blocks
-					var totalArea = (280 * sceneBlock.tileScale) * splitText.length;
+					var tileSize = 280 * sceneBlock.tileScale,
+						totalArea = tileSize * splitText.length;
 					for (var k in sceneBlock.children) {
 						var block = sceneBlock.children[k],
-							x = (block.getContentSize().width * sceneBlock.tileScale) * k;
-						block.adjustPosition(x - totalArea / 2, 0, 0);
+							x = tileSize * k;
+						block.adjustPosition(x - (totalArea * 0.5) + tileSize / 2, 0, 0);
 					}
 
 					// z ordering
@@ -208,7 +211,7 @@
 		</div>
 		<div id="footer">
 			Carambafy by Carlos Pérez <br>
-			Caramba &copy; Learning Shift EIRL - <a href="www.learningshift.cl">www.learningshift.cl</a>
+			Caramba &copy; Learning Shift EIRL - <a href="http://www.learningshift.cl" target="_blank">www.learningshift.cl</a>
 		</div>
 	</div>
 </body>
